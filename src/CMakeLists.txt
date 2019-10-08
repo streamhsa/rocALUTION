@@ -84,6 +84,8 @@ endif()
 add_library(rocalution ${SOURCE} ${PUBLIC_HEADERS})
 add_library(roc::rocalution ALIAS rocalution)
 
+set ( CMAKE_SHARED_LINKER_FLAGS "-Wl,-rpath,$ENV{ROCM_RPATH}" )
+
 # Target link libraries
 if(SUPPORT_OMP)
 target_link_libraries(rocalution PRIVATE ${OpenMP_CXX_FLAGS})
@@ -115,7 +117,8 @@ if(SUPPORT_MPI)
 endif()
 
 # Target properties
-rocm_set_soversion(rocalution ${rocalution_SOVERSION})
+set_target_properties(rocalution PROPERTIES SOVERSION ${LIB_VERSION_MAJOR} )
+set_target_properties(rocalution PROPERTIES VERSION ${LIB_VERSION_STRING} )
 set_target_properties(rocalution PROPERTIES DEBUG_POSTFIX "-d")
 #set_target_properties(rocalution PROPERTIES CXX_VISIBILITY_PRESET "hidden" VISIBILITY_INLINES_HIDDEN ON)
 
@@ -139,7 +142,8 @@ if(SUPPORT_HIP)
   # Create rocALUTION HIP library
   hip_add_library(rocalution_hip SHARED ${HIP_SOURCES})
 
-  rocm_set_soversion(rocalution_hip ${rocalution_SOVERSION})
+  set_target_properties(rocalution_hip PROPERTIES SOVERSION ${LIB_VERSION_MAJOR} )
+  set_target_properties(rocalution_hip PROPERTIES VERSION ${LIB_VERSION_STRING} )
   set_target_properties(rocalution_hip PROPERTIES DEBUG_POSTFIX "-d")
 
   target_link_libraries(rocalution_hip PRIVATE ${ROCBLAS_LIBRARIES} ${ROCSPARSE_LIBRARIES})
