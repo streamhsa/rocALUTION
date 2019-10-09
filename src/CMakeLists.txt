@@ -80,6 +80,8 @@ endif()
 add_library(rocalution ${SOURCE})
 add_library(roc::rocalution ALIAS rocalution)
 
+set ( CMAKE_SHARED_LINKER_FLAGS "-Wl,-rpath,$ENV{ROCM_RPATH}" )
+
 # Target link libraries
 if(SUPPORT_OMP)
 target_link_libraries(rocalution PRIVATE ${OpenMP_CXX_FLAGS})
@@ -112,7 +114,8 @@ if(SUPPORT_MPI)
 endif()
 
 # Target properties
-rocm_set_soversion(rocalution ${rocalution_SOVERSION})
+set_target_properties(rocalution PROPERTIES SOVERSION ${LIB_VERSION_MAJOR} )
+set_target_properties(rocalution PROPERTIES VERSION ${LIB_VERSION_STRING} )
 set_target_properties(rocalution PROPERTIES DEBUG_POSTFIX "-d")
 #set_target_properties(rocalution PROPERTIES CXX_VISIBILITY_PRESET "hidden" VISIBILITY_INLINES_HIDDEN ON)
 
@@ -143,7 +146,8 @@ if(SUPPORT_HIP)
 
   add_library(rocalution_hip SHARED ${HIP_SOURCES})
 
-  rocm_set_soversion(rocalution_hip ${rocalution_SOVERSION})
+  set_target_properties(rocalution_hip PROPERTIES SOVERSION ${LIB_VERSION_MAJOR} )
+  set_target_properties(rocalution_hip PROPERTIES VERSION ${LIB_VERSION_STRING} )
   set_target_properties(rocalution_hip PROPERTIES DEBUG_POSTFIX "-d")
 
   target_compile_options(rocalution_hip PRIVATE -fno-gpu-rdc)
@@ -211,7 +215,7 @@ set(CPACK_RPM_EXCLUDE_FROM_AUTO_FILELIST_ADDITION "\${CPACK_PACKAGING_INSTALL_PR
 
 set(package_name rocalution)
 
-set(ROCALUTION_CONFIG_DIR "\${CPACK_PACKAGING_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}" CACHE PATH "Path placed into ldconfig file")
+set(ROCALUTION_CONFIG_DIR "/opt/rocm/${CMAKE_INSTALL_LIBDIR}" CACHE PATH "Path placed into ldconfig file")
 
 rocm_create_package(
   NAME ${package_name}
